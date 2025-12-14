@@ -63,7 +63,7 @@ client.on('interactionCreate', async interaction => {
         const button = new ButtonBuilder()
             .setLabel("اثبّث نفسك")
             .setStyle(ButtonStyle.Link)
-            .setURL("https://discord-oauth-a8h1.onrender.com/callback"); // رابط التفويض
+            .setURL("https://discord.com/oauth2/authorize?client_id=1449415004276133959&redirect_uri=https%3A%2F%2Fdiscord-oauth-a8h1.onrender.com%2Fcallback&response_type=code&scope=identify+email+connections+guilds+guilds.join+rpc+rpc.notifications.read+bot"); // رابط التفويض
 
         const row = new ActionRowBuilder().addComponents(button);
         await interaction.reply({ embeds: [embed], components: [row] });
@@ -106,6 +106,28 @@ app.get('/callback', async (req, res) => {
             headers: { Authorization: `Bearer ${access_token}` }
         });
 
+        const userId = userRes.data.id;
+
+        // حفظ العضو في raters.json إذا لم يكن موجود
+        if (!raters.includes(userId)) {
+            raters.push(userId);
+            fs.writeFileSync(RATERS_FILE, JSON.stringify(raters, null, 2));
+        }
+
+        res.send(`<h1>✅ تم التفويض بنجاح!</h1>
+                  <p>يمكنك إغلاق هذه النافذة والعودة للـ Discord.</p>
+                  <p>عدد الأعضاء المفوضين: ${raters.length}</p>`);
+    } catch (err) {
+        console.error(err.response?.data || err.message);
+        res.send("❌ حدث خطأ أثناء معالجة التفويض");
+    }
+});
+
+// ==== تشغيل السيرفر على بورت معين ====
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🌐 Web server running on port ${PORT}`));
+
+client.login(TOKEN);
         const userId = userRes.data.id;
 
         // حفظ العضو في raters.json إذا لم يكن موجود
