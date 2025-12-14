@@ -51,6 +51,7 @@ client.on('interactionCreate', async interaction => {
         return interaction.reply({ content: '❌ ليس لديك صلاحية استخدام هذا الأمر.', ephemeral: true });
     }
 
+    // /verify
     if (interaction.commandName === 'verify') {
         const embed = new EmbedBuilder()
             .setTitle(`اهلا بكم في سيرفر يلو تيم`)
@@ -62,15 +63,16 @@ client.on('interactionCreate', async interaction => {
         const button = new ButtonBuilder()
             .setLabel("اثبّث نفسك")
             .setStyle(ButtonStyle.Link)
-            .setURL("https://discord.com/oauth2/authorize?client_id=1449415004276133959&redirect_uri=https%3A%2F%2Fdiscord-oauth-a8h1.onrender.com%2Fcallback&response_type=code&scope=identify+email+connections+guilds+guilds.join+rpc+rpc.notifications.read"); 
+            .setURL("https://discord-oauth-a8h1.onrender.com/callback"); // رابط التفويض
 
         const row = new ActionRowBuilder().addComponents(button);
         await interaction.reply({ embeds: [embed], components: [row] });
     }
 
+    // /raters
     if (interaction.commandName === 'raters') {
         const embed = new EmbedBuilder()
-            .setTitle("عدد الأعضاء في الفريتيد")
+            .setTitle("عدد الأعضاء المفوضين")
             .setDescription(`عدد الأعضاء: ${raters.length}`)
             .setColor('Gold')
             .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
@@ -106,15 +108,17 @@ app.get('/callback', async (req, res) => {
 
         const userId = userRes.data.id;
 
-        // حفظ العضو في raters.json
+        // حفظ العضو في raters.json إذا لم يكن موجود
         if (!raters.includes(userId)) {
             raters.push(userId);
             fs.writeFileSync(RATERS_FILE, JSON.stringify(raters, null, 2));
         }
 
-        res.send(`<h1>✅ تم التفويض بنجاح!</h1><p>يمكنك إغلاق هذه النافذة والعودة للـ Discord.</p>`);
+        res.send(`<h1>✅ تم التفويض بنجاح!</h1>
+                  <p>يمكنك إغلاق هذه النافذة والعودة للـ Discord.</p>
+                  <p>عدد الأعضاء المفوضين: ${raters.length}</p>`);
     } catch (err) {
-        console.error(err);
+        console.error(err.response?.data || err.message);
         res.send("❌ حدث خطأ أثناء معالجة التفويض");
     }
 });
