@@ -1,4 +1,4 @@
-Enter{
+{
   "name": "discord-bot-verify",
   "version": "1.0.0",
   "description": "بوت Discord مع أوامر سلاش ونظام Verify + صفحة Redirect URI على Express",
