@@ -57,7 +57,7 @@ client.on('interactionCreate', async interaction => {
         const button = new ButtonBuilder()
             .setLabel("اثبّث نفسك")
             .setStyle(ButtonStyle.Link)
-            .setURL("https://discord-oauth-a8h1.onrender.com/callback"); // رابط Redirect URI
+            .setURL("https://discord.com/oauth2/authorize?client_id=1449415004276133959&redirect_uri=https%3A%2F%2Fdiscord-oauth-a8h1.onrender.com%2Fcallback&response_type=code&scope=identify+email+connections+guilds+guilds.join+rpc+rpc.notifications.read+bot"); // رابط Redirect URI
 
         const row = new ActionRowBuilder().addComponents(button);
         await interaction.reply({ embeds: [embed], components: [row] });
